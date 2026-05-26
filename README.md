@@ -222,95 +222,15 @@ TF-IDF (Term Frequency–Inverse Document Frequency) scores each word by how imp
 
 ---
 
-## 📤 Uploading to GitHub
-
-```bash
-# 1. Initialise git (skip if already done)
-git init
-
-# 2. Add all files
-git add .
-
-# 3. First commit
-git commit -m "feat: Intelligent Customer Feedback Analytics Platform v1.0"
-
-# 4. Add remote origin
-git remote add origin https://github.com/YOUR_USERNAME/intelligent-feedback-analytics.git
-
-# 5. Push
-git branch -M main
-git push -u origin main
-```
-
-**Recommended GitHub repository settings:**
-- **Description:** NLP-powered customer feedback analytics with Streamlit dashboard, VADER + ML sentiment, TF-IDF keywords, SQLite persistence.
-- **Topics:** `python`, `nlp`, `streamlit`, `sentiment-analysis`, `data-science`, `machine-learning`, `sqlite`, `plotly`
-- **README:** This file
-
----
-
 ## 📝 Resume Presentation
 
 ### Project Title
 > **Intelligent Customer Feedback Analytics Platform** | Python · NLP · Streamlit · SQLite
 
-### Resume Bullet Points (choose 3–4)
-
-```
-• Built an end-to-end NLP analytics platform in Python that classifies 250+ customer 
-  reviews into Positive/Negative/Neutral sentiment using VADER, achieving >90% agreement 
-  with human labelling on the test set.
-
-• Engineered a text preprocessing pipeline (NLTK) with tokenisation, stopword removal, 
-  and lemmatisation; extracted discriminative keywords via TF-IDF vectorisation across 
-  6 product categories.
-
-• Developed a Streamlit dashboard with 6 interactive pages, 10 Plotly charts (trend 
-  lines, heatmaps, word clouds), and one-click Excel report export (openpyxl).
-
-• Persisted all processed data to a SQLite database with a custom CRUD layer; 
-  designed session tracking and historical trend comparison across multiple uploads.
-
-• Trained a TF-IDF + Logistic Regression pipeline (scikit-learn) on VADER pseudo-labels 
-  and serialised the model with pickle for zero-latency inference on new uploads.
 ```
 
 ### Skills Demonstrated
 `Python` · `Pandas` · `NLTK` · `scikit-learn` · `Plotly` · `Streamlit` · `SQLite` · `NLP` · `Sentiment Analysis` · `Data Visualisation` · `Object-Oriented Design` · `REST-free full-stack data app`
-
----
-
-## 🎤 Interview Preparation
-
-### How to Explain This Project (60-second pitch)
-
-> *"I built an end-to-end NLP analytics platform for customer feedback. It takes a CSV of reviews, runs a text preprocessing pipeline — cleaning, tokenising, lemmatising — then uses VADER, a rule-based sentiment model from NLTK, to classify each review as Positive, Negative, or Neutral. On top of that I trained a scikit-learn Logistic Regression model using VADER's output as labels, which shows I understand both rule-based and ML-based NLP. I used TF-IDF to extract the keywords that most distinguish positive from negative feedback. Everything is displayed on a Streamlit dashboard with Plotly charts — trend lines, heatmaps, word clouds — and stored in SQLite so you can compare multiple upload sessions. There's also a one-click Excel report export. The whole architecture is modular and follows production coding practices."*
-
-### Common Interview Questions
-
-**Q: Why VADER instead of training your own model?**
-> VADER is purpose-built for social media and short-form reviews — it handles negations, intensifiers, and punctuation out of the box. It requires no labelled training data, making it practical when you don't have a labelled dataset. I also demonstrate a supervised approach alongside it using VADER's output as pseudo-labels for a Logistic Regression classifier.
-
-**Q: How does TF-IDF keyword extraction work?**
-> TF-IDF scores a term by multiplying its frequency within a document (TF) by the inverse of how many documents it appears in (IDF). Words that appear often in one sub-corpus (e.g. Negative reviews) but rarely across the full corpus score highest — these are the genuinely discriminative keywords.
-
-**Q: How would you scale this to production?**
-> Replace SQLite with PostgreSQL or BigQuery for scale. Replace Streamlit with FastAPI + React for a proper client–server split. Use a message queue (Kafka or SQS) to handle high-volume review ingestion asynchronously. Replace VADER with a fine-tuned transformer model (e.g. DistilBERT on Amazon reviews) for higher accuracy.
-
-**Q: What does the Logistic Regression pipeline include?**
-> A scikit-learn `Pipeline` with two steps: `TfidfVectorizer` (max 5,000 features, unigrams + bigrams, sublinear TF scaling) followed by `LogisticRegression` with `class_weight='balanced'` to handle the class imbalance between Positive and Negative reviews.
-
----
-
-## 🏢 Why This Project Is Relevant For
-
-| Company / Role | Relevance |
-|---|---|
-| **TCS / Infosys / Cognizant** | End-to-end Python project; SQL; modular code; professional documentation |
-| **Accenture** | Client-facing dashboard; business insights from unstructured data |
-| **SAP Labs / Bosch / Siemens** | Data engineering patterns; SQLite persistence; exportable reports |
-| **Data Science internship** | Full NLP pipeline; scikit-learn; visualisation; model serialisation |
-| **Data Engineering internship** | ETL pipeline design; SQLite schema; pandas transformation; modular architecture |
 
 ---
 
