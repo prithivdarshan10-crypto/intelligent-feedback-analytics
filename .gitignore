@@ -1,0 +1,67 @@
+# =============================================================================
+# .gitignore — Intelligent Customer Feedback Analytics Platform
+# =============================================================================
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# ── Environment variables ─────────────────────────────────────────────────────
+.env
+.env.local
+*.env
+
+# ── Streamlit ─────────────────────────────────────────────────────────────────
+.streamlit/secrets.toml
+
+# ── Database (runtime-generated — do NOT commit) ──────────────────────────────
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# ── ML models (large binary files — use Git LFS if needed) ───────────────────
+models/*.pkl
+models/*.joblib
+models/*.h5
+
+# ── Generated outputs / exports ───────────────────────────────────────────────
+exports/
+visualizations/*.png
+visualizations/*.jpg
+visualizations/*.svg
+
+# ── Jupyter Notebooks checkpoints ────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── IDE / Editor ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Test & coverage ───────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
