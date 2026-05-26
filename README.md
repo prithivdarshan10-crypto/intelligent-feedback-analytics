@@ -220,13 +220,6 @@ else:                        → Neutral
 
 TF-IDF (Term Frequency–Inverse Document Frequency) scores each word by how important it is to a specific sub-corpus (e.g. Negative reviews) relative to the entire corpus. This surfaces genuinely discriminative keywords rather than just frequent ones.
 
----
-
-## 📝 Resume Presentation
-
-### Project Title
-> **Intelligent Customer Feedback Analytics Platform** | Python · NLP · Streamlit · SQLite
-
 ```
 
 ### Skills Demonstrated
