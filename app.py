@@ -1,5 +1,5 @@
 # =============================================================================
-# app.py  –  Intelligent Customer Feedback Analytics Platform
+# app.py  -  Intelligent Customer Feedback Analytics Platform
 # Main Streamlit dashboard entry-point.
 #
 # Run with:
@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 # ── Project imports ───────────────────────────────────────────────────────────
 from config.settings          import PAGE_TITLE, PAGE_ICON, LAYOUT, DEFAULT_TEXT_COL
+from src.import_sources       import prepare_uploaded_feedback
 from src.preprocessor         import preprocess_dataframe, get_text_stats
 from src.sentiment_analyzer   import analyze_dataframe, get_sentiment_summary, train_ml_model
 from src.keyword_extractor    import keywords_by_sentiment, extract_keywords_tfidf
@@ -104,6 +105,7 @@ def _init_state():
         "df_processed": None,   # After preprocessing + sentiment analysis
         "session_id":   str(uuid.uuid4())[:8],
         "filename":     None,
+        "detected_text_col": DEFAULT_TEXT_COL,
         "analysis_done": False,
     }
     for k, v in defaults.items():
@@ -144,15 +146,17 @@ with st.sidebar:
     uploaded_file = st.file_uploader(
         "Upload CSV file",
         type=["csv"],
-        help="CSV must contain a text column (e.g. review_text). "
+        help="CSV must contain review_text, text, comment, feedback, or an Xquik text export. "
              "You can use the sample dataset in /dataset folder.",
     )
 
     if uploaded_file is not None:
         try:
             df_raw = pd.read_csv(uploaded_file)
+            df_raw, detected_text_col = prepare_uploaded_feedback(df_raw)
             st.session_state["df_raw"]   = df_raw
             st.session_state["filename"] = uploaded_file.name
+            st.session_state["detected_text_col"] = detected_text_col
             st.session_state["analysis_done"] = False   # reset on new upload
             st.success(f"✅ Loaded **{len(df_raw)}** rows")
         except Exception as e:
@@ -162,7 +166,7 @@ with st.sidebar:
     st.markdown("### ⚡ Run Analysis")
     text_col = st.text_input(
         "Text column name",
-        value=DEFAULT_TEXT_COL,
+        value=st.session_state.get("detected_text_col", DEFAULT_TEXT_COL),
         help="Name of the column containing review text.",
     )
 
@@ -176,35 +180,27 @@ with st.sidebar:
                 try:
                     df = st.session_state["df_raw"].copy()
 
-                    # Auto-detect text column if the specified one is absent
-                    if text_col not in df.columns:
-                        candidates = [c for c in df.columns
-                                      if "text" in c.lower() or "review" in c.lower()
-                                         or "comment" in c.lower() or "feedback" in c.lower()]
-                        if candidates:
-                            text_col = candidates[0]
-                            st.info(f"ℹ️ Auto-detected text column: **{text_col}**")
-                        else:
-                            st.error(f"Column '{text_col}' not found. "
-                                     f"Available: {list(df.columns)}")
-                            st.stop()
+                    df, detected_text_col = prepare_uploaded_feedback(df, text_col)
+                    if detected_text_col != text_col:
+                        text_col = detected_text_col
+                        st.info(f"ℹ️ Auto-detected text column: **{text_col}**")
 
-                    # Step 1 – preprocess
+                    # Step 1 - preprocess
                     df = preprocess_dataframe(df, text_col)
 
-                    # Step 2 – sentiment analysis (VADER)
+                    # Step 2 - sentiment analysis (VADER)
                     df = analyze_dataframe(df, text_col)
 
-                    # Step 3 – persist to DB
+                    # Step 3 - persist to DB
                     sid = st.session_state["session_id"]
                     save_feedback(df, sid)
                     save_session_fn = lambda: None  # already in db_manager import
 
-                    # Step 4 – save keywords
+                    # Step 4 - save keywords
                     kw = keywords_by_sentiment(df, top_n=20)
                     save_keywords(kw, sid)
 
-                    # Step 5 – optional ML model training
+                    # Step 5 - optional ML model training
                     if len(df) >= 30:
                         train_ml_model(df, "cleaned_text")
 
@@ -269,7 +265,7 @@ if "🏠" in page:
     st.markdown("""
 1. **Upload CSV** using the sidebar uploader (or use the included `sample_feedback.csv`).
 2. Set the **text column name** (default: `review_text`).
-3. Click **🚀 Analyse Now** — the NLP pipeline runs automatically.
+3. Click **🚀 Analyse Now** - the NLP pipeline runs automatically.
 4. Explore **Analysis Dashboard**, **Keywords**, and **Trends** tabs.
 5. **Export** your report as Excel or CSV.
 """)
@@ -281,7 +277,7 @@ if "🏠" in page:
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total Rows",    len(df_raw))
         c2.metric("Total Columns", len(df_raw.columns))
-        c3.metric("Filename",      st.session_state.get("filename", "—"))
+        c3.metric("Filename",      st.session_state.get("filename", "-"))
         c4.metric("Memory",        f"{df_raw.memory_usage(deep=True).sum() / 1024:.1f} KB")
         st.dataframe(df_raw.head(10), use_container_width=True)
 
@@ -386,7 +382,7 @@ elif "🔑" in page:
     df = st.session_state["df_processed"]
 
     # ── Overall keywords ──────────────────────────────────────────────────────
-    st.markdown('<p class="section-title">Top Keywords — All Reviews</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-title">Top Keywords - All Reviews</p>', unsafe_allow_html=True)
 
     all_keywords = extract_keywords_tfidf(
         df["cleaned_text"].dropna().tolist(), top_n=20
@@ -462,7 +458,7 @@ elif "🔑" in page:
 
         if cat_kw:
             st.plotly_chart(
-                keyword_bar(cat_kw, f"Top Keywords — {selected_cat}", "#9b59b6"),
+                keyword_bar(cat_kw, f"Top Keywords - {selected_cat}", "#9b59b6"),
                 use_container_width=True,
             )
         else:
@@ -502,7 +498,7 @@ elif "📈" in page:
 
     # ── Heatmap ───────────────────────────────────────────────────────────────
     if "product_category" in df.columns:
-        st.markdown('<p class="section-title">Sentiment Heatmap — Category × Month</p>',
+        st.markdown('<p class="section-title">Sentiment Heatmap - Category × Month</p>',
                     unsafe_allow_html=True)
         st.plotly_chart(sentiment_heatmap(df), use_container_width=True)
 
@@ -592,7 +588,7 @@ elif "📥" in page:
 
     # ── CSV Download ──────────────────────────────────────────────────────────
     st.markdown("### 📄 Download as CSV")
-    st.markdown("Lightweight flat-file format — best for further processing.")
+    st.markdown("Lightweight flat-file format - best for further processing.")
     csv_bytes = export_csv(df)
     st.download_button(
         label      = "⬇️  Download CSV",
