@@ -241,7 +241,7 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) for de
 
 ## 👤 Author
 
-**Darshan** — B.Tech AIML, SRM Institute of Science and Technology  
+**Priyadarshan** — B.Tech AIML, SRM Institute of Science and Technology  
 📧 prithivdarshan10@gmail.com  
 🔗 [LinkedIn](https://linkedin.com/in/darshan-7039bb352)  
 💻 [GitHub](https://github.com/prithivdarshan10-crypto)
